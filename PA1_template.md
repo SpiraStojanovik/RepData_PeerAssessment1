@@ -10,32 +10,38 @@ taken in 5 minute intervals each day.
 
 The code below loads the data, and sets the date variable to date format. 
 
-```{r}
+
+```r
 data<-read.csv('activity.csv') #read the file
 data$date<-as.Date(data$date) #set the date variable to date format
 ```
 
 ## What is mean total number of steps taken per day?
 
-```{r}
+
+```r
 TotalStepsPerDay<-tapply(data$steps,data$date,sum)
 hist(TotalStepsPerDay,breaks = 15,col="red",xlab="No. of steps",
      main="Total number of steps taken each day")
 ```
 
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2.png) 
+
 **As shown in the histogram, most days the subject takes 10,000 steps.**  
 
-```{r}
+
+```r
 # calculate the mean and median
 meanTSPD<-mean(TotalStepsPerDay,na.rm=T)
 medianTSPD<-median(TotalStepsPerDay,na.rm=T)
 ```
 
-**The mean total number of steps taken per day is `r meanTSPD`, and the median is `r medianTSPD`.**
+**The mean total number of steps taken per day is 1.0766 &times; 10<sup>4</sup>, and the median is 10765.**
 
 ## What is the average daily activity pattern?
 
-```{r}
+
+```r
 AveStepsPerInterval<-tapply(data$steps,data$interval,mean,na.rm=T)
 
 # create a new vector so that the x-axis can be created
@@ -45,7 +51,10 @@ plot(Interval,AveStepsPerInterval, type = "l", lwd = 3,
      main = "Average Number of Steps per Interval")
 ```
 
-```{r}
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4.png) 
+
+
+```r
 # create a table with the averages per interval so that the interval can be 
 # subsetted 
 AveData<-cbind(Interval,AveStepsPerInterval)
@@ -53,19 +62,21 @@ AveData<-cbind(Interval,AveStepsPerInterval)
 IntervalWithHighestAve<-AveData[max(AveStepsPerInterval)==AveData[,2],1]
 ```
 
-**The highest average number of steps occurs at `r IntervalWithHighestAve`.**
+**The highest average number of steps occurs at 835.**
 
 ## Imputing missing values
 
-```{r}
+
+```r
 NoOfNAs<-sum(is.na(data$steps)) #calculate number of missing values
 ```
 
-**The data set has `r NoOfNAs` missing values.**
+**The data set has 2304 missing values.**
 
 The code below replaces all NAs with the average number of steps for the particular interval, and creates a new data sets that does not have missing values. 
 
-```{r}
+
+```r
 stepsUpdated<-data$steps # initiated a new variable
 
 for(i in 1:length(stepsUpdated)){ # loop through all steps values
@@ -81,24 +92,29 @@ dataUpdated<-cbind(stepsUpdated,data[,2:3])
 ```
 
 
-```{r}
+
+```r
 # Plot the histogram for the updated data set
 TotalStepsPerDayUpdated<-tapply(dataUpdated$stepsUpdated,dataUpdated$date,sum)
 hist(TotalStepsPerDayUpdated,breaks = 15,col="red",xlab="No. of steps",
      main="Total number of steps taken each day, imputted missing values")
 ```
 
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
+
 As shown in the histogram above, replacing the missing values has not changed the data set i.e. the distribution of total number of steps for the updated data set is identical to the distribution for the original data set. 
 
-```{r}
+
+```r
 # calculate the mean and median
 meanTSPDU<-mean(TotalStepsPerDayUpdated)
 medianTSPDU<-median(TotalStepsPerDayUpdated)
 ```
 
-**For the updated data set, the mean total number of steps taken per day is `r meanTSPDU`, and the median is `r medianTSPDU`.**
+**For the updated data set, the mean total number of steps taken per day is 1.0766 &times; 10<sup>4</sup>, and the median is 1.0766 &times; 10<sup>4</sup>.**
 
-```{r}
+
+```r
 # Difference in mean values
 
 diff1<-mean(TotalStepsPerDayUpdated)-mean(TotalStepsPerDay,na.rm=T)
@@ -109,7 +125,7 @@ diff2<-(median(TotalStepsPerDayUpdated)-median(TotalStepsPerDay,na.rm=T)) /
         median(TotalStepsPerDayUpdated)*100
 ```
 
-The difference in mean value in the original and updated data set is `r diff1`, and the difference in the median value as a percentage of the original value is `r diff2`%. The small difference suggests that replacing the NA values with average values for that interval has insignificant impact on the estimates of the total number of steps.
+The difference in mean value in the original and updated data set is 0, and the difference in the median value as a percentage of the original value is 0.011%. The small difference suggests that replacing the NA values with average values for that interval has insignificant impact on the estimates of the total number of steps.
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
@@ -117,7 +133,8 @@ The difference in mean value in the original and updated data set is `r diff1`, 
 The code below adds a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend
 day. The second half of the code produces the plot. 
 
-```{r}
+
+```r
 # create a new factor variable for weekday/weekend
 
 Weekdays<-numeric(length(dataUpdated[,2])) # initiate a new variable
@@ -149,6 +166,8 @@ a+stat_summary(fun.y = mean, geom = "line",size = 1.5,color = "blue")+
         labs (title = "Activity patterns")+
         theme_bw()
 ```
+
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11.png) 
 
 
 The plot above shows the average number of steps taken during the day. As shown, the activity patterns are different; during weekdays most activity takes place in the morning and during weekends activity is spread out during the day. 
